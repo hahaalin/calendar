@@ -188,7 +188,7 @@ export default {
     },
     onDayClick () {
       const calendarApi = this.$refs.fullCalendar.getApi()
-      calendarApi.gotoDate(this.date)
+      calendarApi.gotoDate(this.pickerDate)
       this.getViewTitle()
     }
 
