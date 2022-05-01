@@ -164,6 +164,7 @@ export default {
     changeView () { // 改變視圖 周或日
       const calendarApi = this.$refs.fullCalendar.getApi()
       calendarApi.changeView(this.selectedView)
+      this.getViewTitle()
     },
     getViewTitle () {
       const calendarApi = this.$refs.fullCalendar.getApi()
