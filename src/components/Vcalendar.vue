@@ -1,7 +1,7 @@
 <template>
   <!-- <v-calendar />
   <v-date-picker v-model="date" /> -->
-    <v-date-picker  :rows="2" class="inline-block h-full" v-model="date">
+    <v-date-picker  :rows="2" class="inline-block h-full" v-model="date" :attributes='attrs'>
     <template v-slot="{ inputValue, togglePopover }">
       <div class="flex items-center">
         <button
@@ -30,7 +30,16 @@
 export default {
   data () {
     return {
-      date: new Date()
+      date: new Date(),
+      attrs: [
+        {
+          key: 'today',
+          highlight: {
+            color: 'purple'
+          },
+          dates: new Date()
+        }
+      ]
     }
   }
 }
