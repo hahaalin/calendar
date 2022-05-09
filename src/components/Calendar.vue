@@ -6,7 +6,7 @@
         <option value="timeGridWeek">周檢視</option>
         <option value="timeGridDay">日檢視</option>
       </select>
-      <p class="secondary-bg-color rounded-pill p-2 ms-2 primary-color">使用者名稱</p>
+      <p class="secondary-bg-color rounded-pill p-2 ms-2 primary-color">{{lineName}}<img :src="linePicture" style="width: 20px;"></p>
     </div>
   </header>
 
@@ -69,6 +69,10 @@ import OrderModal from '../components/OrderModal'
 export default {
   components: {
     FullCalendar, OrderModal
+  },
+  props: {
+    lineName: String,
+    linePicture: String
   },
   data () {
     return {
@@ -155,9 +159,13 @@ export default {
       orderComponent.showModal()
     },
     addNewEvent (item) {
-      this.calendarOptions.events = [
-        ...this.calendarOptions.events, item
-      ]
+      const calendarApi = this.$refs.fullCalendar.getApi()
+      calendarApi.addEvent({
+        id: item.id,
+        title: item.title,
+        start: item.start,
+        end: item.end
+      })
       const orderComponent = this.$refs.orderModal
       orderComponent.hideModal()
     },
