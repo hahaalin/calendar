@@ -21,23 +21,29 @@
     <div class="modal-body">
         <div>
           <label for="">標題</label>
-          <input type="text" v-model="title">
+          <input type="text" v-model="tempOrder.title">
         </div>
         <div>
           <label for="">開始時間</label>
-          <input type="datetime-local" v-model="start" >
+          <input type="datetime-local" v-model="tempOrder.start" >
         </div>
         <div>
           <label for="">結束時間</label>
-          <input type="datetime-local" v-model="end" >
+          <input type="datetime-local" v-model="tempOrder.end" >
         </div>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-outline-secondary"
               data-bs-dismiss="modal">取消
       </button>
-      <button type="button" class="btn btn-primary" @click="addEvent"
->確認</button>
+      <button type="button"  v-if="isNew" class="btn btn-primary" @click="addEvent"
+>新增</button>
+
+     <button type="button" v-if="!isNew" class="btn btn-primary" @click="updateEvent"
+>編輯</button>
+   <button type="button" v-if="!isNew" class="btn btn-danger" @click="removeEvent"
+>刪除</button>
+
     </div>
   </div>
 </div>
@@ -48,29 +54,42 @@
 import modalMixin from '@/mixins/modalMixin'
 export default {
   props: {
-
-  },
-  watch: {
-
+    order: {
+      type: Object
+    },
+    isNew: {
+      type: Boolean
+    }
   },
   data () {
     return {
       modal: {},
-      title: '',
-      start: {},
-      end: {}
+      tempOrder: {}
     }
   },
   methods: {
     addEvent () {
       this.$emit('add-event', {
         id: Math.floor(Date.now()),
-        title: this.title,
-        start: this.start,
-        end: this.end
+        title: this.tempOrder.title,
+        start: this.tempOrder.start,
+        end: this.tempOrder.end
       })
+    },
+    updateEvent () {
+      this.$emit('update-event', this.tempOrder)
+    },
+    removeEvent () {
+      this.$emit('remove-event', this.tempOrder.event)
+    }
+  },
+  watch: {
+    order () {
+      this.tempOrder = this.order
+      console.log('tempOrder', this.tempOrder)
     }
   },
   mixins: [modalMixin]
 }
+
 </script>

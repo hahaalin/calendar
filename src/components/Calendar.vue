@@ -30,16 +30,6 @@
         </div>
       </template>
 
-        <!-- <template v-slot:footer>
-      <div class="bg-gray-100 text-center p-2 border-t rounded-b-lg">
-        <button
-          class="bg-blue-500 text-white font-medium px-2 py-1 rounded hover:bg-blue-600"
-          @click="moveToToday"
-        >
-          Today
-        </button>
-      </div>
-    </template> -->
     </v-date-picker>
 
     <p>{{viewTitle}}</p>
@@ -50,9 +40,9 @@
         :options='calendarOptions'
       />
 
-  <OrderModal ref="orderModal" @add-event="addNewEvent"/>
+  <OrderModal ref="orderModal" @add-event="addNewEvent" @update-event="updateEvent" @remove-event="removeEvent"  :order="tempOrder" :isNew="isNew"/>
   <footer class="p-3 text-center">
-      <button class="btn primary-bg-color text-white" @click="openModal">+ 新增預約</button>
+      <button class="btn primary-bg-color text-white" @click="openModal(true)">+ 新增預約</button>
   </footer>
 
 </template>
@@ -80,6 +70,7 @@ export default {
       pickerDate: new Date(),
       viewTitle: '',
       ViewDate: '',
+      tempOrder: {},
       attrs: [
         {
           key: 'today',
@@ -128,11 +119,12 @@ export default {
         }
       },
       currentEvents: []
+
     }
   },
   methods: {
     handleDateSelect (selectInfo) {
-      // console.log(selectInfo)
+      console.log(selectInfo)
       const title = prompt('請輸入事件名稱')
       const calendarApi = selectInfo.view.calendar
       calendarApi.unselect() // clear date selection
@@ -147,14 +139,29 @@ export default {
       }
     },
     handleEventClick (clickInfo) {
-      if (confirm(`你確定要刪除 '${clickInfo.event.title}' 嗎?`)) {
-        clickInfo.event.remove()
-      }
+      this.openModal(false, {
+        id: clickInfo.event.id,
+        title: clickInfo.event.title,
+        start: formatDate(clickInfo.event.startStr),
+        end: formatDate(clickInfo.event.endStr),
+        allDay: clickInfo.event.allDay,
+        event: clickInfo
+      })
+      // console.log(clickInfo.event)
+      // if (confirm(`你確定要刪除 '${clickInfo.event.title}' 嗎?`)) {
+      //   clickInfo.event.remove()
+      // }
     },
     handleEvents (events) {
       this.currentEvents = events
     },
-    openModal () {
+    openModal (isNew, item) {
+      if (isNew) {
+        this.tempOrder = {}
+      } else {
+        this.tempOrder = { ...item }
+      }
+      this.isNew = isNew
       const orderComponent = this.$refs.orderModal
       orderComponent.showModal()
     },
@@ -166,6 +173,22 @@ export default {
         start: item.start,
         end: item.end
       })
+      const orderComponent = this.$refs.orderModal
+      orderComponent.hideModal()
+    },
+    updateEvent (item) {
+      const calendarApi = this.$refs.fullCalendar.getApi()
+      const events = calendarApi.getEvents()
+      const index = events.findIndex(_event => _event.id === item.id)
+      console.log(index, events)
+      events[index].setProp('title', item.title)
+      events[index].setStart(item.start)
+      events[index].setEnd(item.end)
+      const orderComponent = this.$refs.orderModal
+      orderComponent.hideModal()
+    },
+    removeEvent (clickInfo) {
+      clickInfo.event.remove()
       const orderComponent = this.$refs.orderModal
       orderComponent.hideModal()
     },
@@ -206,6 +229,11 @@ export default {
     this.getViewTitle()
   }
 }
+
+function formatDate (date) {
+  return date.slice(0, date.indexOf('+08:00'))
+}
+
 </script>
 <style lang='scss'>
 .fc {
