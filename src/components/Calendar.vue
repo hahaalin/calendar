@@ -17,7 +17,7 @@
     </div>
   </header>
 
-  <div class="d-flex align-items-center">
+  <!-- <div class="d-flex align-items-center">
     <button type="button" class="btn" @click="prevFn">
       <i class="fa-solid fa-circle-chevron-left"></i>
     </button>
@@ -54,7 +54,7 @@
     <button type="button" class="btn" @click="nextFn">
       <i class="fa-solid fa-circle-chevron-right"></i>
     </button>
-  </div>
+  </div> -->
 
   <FullCalendar ref="fullCalendar" :options="calendarOptions" />
 
@@ -66,11 +66,11 @@
     :order="tempOrder"
     :isNew="isNew"
   />
-  <footer class="p-3 text-center">
+  <!-- <footer class="p-3 text-center">
     <button class="btn primary-bg-color text-white" @click="openModal(true)">
       + 新增預約
     </button>
-  </footer>
+  </footer> -->
 </template>
 <script>
 import FullCalendar from "@fullcalendar/vue3";
@@ -78,11 +78,9 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import momentPlugin from "@fullcalendar/moment";
-// import bootstrap5Plugin from "@fullcalendar/bootstrap5";
 // import moment from 'moment'
 // import 'moment/locale/zh-tw'
 import OrderModal from "../components/OrderModal";
-
 export default {
   components: {
     FullCalendar,
@@ -94,7 +92,7 @@ export default {
   },
   data() {
     return {
-      selectedView: "dayGridMonth",
+      selectedView: "timeGridWeek",
       pickerDate: new Date(),
       viewTitle: "",
       ViewDate: "",
@@ -122,10 +120,8 @@ export default {
           interactionPlugin,
           timeGridPlugin,
           momentPlugin,
-          // bootstrap5Plugin,
         ],
-        // themeSystem: "bootstrap5",
-        initialView: "dayGridMonth",
+        initialView: "timeGridWeek",
         firstDay: 1, // 周一開始
         height: "100%",
         allDaySlot: false,
@@ -143,6 +139,10 @@ export default {
         views: {
           timeGridDay: {
             titleFormat: "YYYY/MM/D",
+          },
+          week: {
+            titleFormat: "[Week from] D MMMM YYYY",
+            titleRangeSeparator: " to ",
           },
         },
         selectable: true, // 是否可點日期
@@ -266,7 +266,6 @@ export default {
     this.getViewTitle();
   },
 };
-
 function formatDate(date) {
   return date.slice(0, date.indexOf("+08:00"));
 }
@@ -274,8 +273,29 @@ function formatDate(date) {
 <style lang="scss">
 .fc {
   flex: 1;
+  table {
+    font-size: 10px;
+    color: #70757a;
+    .fc-col-header-cell-cushion {
+      color: #70757a;
+    }
+  }
 }
 .fc .fc-toolbar.fc-header-toolbar {
   margin-bottom: 0;
+}
+.fc-timeGridDay-view .fc-scrollgrid,
+.fc-timeGridWeek-view .fc-scrollgrid {
+  border: none;
+}
+.fc .fc-timegrid-slot-minor {
+  border: none;
+  height: 2.5em;
+}
+.fc .fc-timegrid-slot-label {
+  border: none;
+}
+.fc .fc-daygrid-day-top {
+  justify-content: center;
 }
 </style>

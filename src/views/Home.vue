@@ -1,6 +1,6 @@
 <template>
-  <div class="container-fluid p-0 h-100 d-flex flex-column">
-    <header class="d-flex border-bottom p-2 align-items-center">
+  <div class="container-fluid p-0 h-100 bd-layout">
+    <header class="d-flex border-bottom p-2 align-items-center bd-header">
       <div class="d-flex align-items-center">
         <img src="@/assets/icons8-google-calendar-96.png" alt="" width="40" />
         <h1 class="fs-4 mb-0">日曆</h1>
@@ -22,18 +22,22 @@
         </select>
       </div>
     </header>
-    <div class="grid">
-      <div class="g-col-3">
-        <button type="button" class="btn btn-outline-secondary d-block">
-          建立
+    <aside class="bd-sidebar">
+      <div class="px-2 py-3">
+        <button
+          type="button"
+          class="btn btn-outline-secondary d-block rounded-pill p-3"
+        >
+          <i class="fa-solid fa-plus me-3 fa-2x align-middle"></i>
+          <span class="align-middle">建立</span>
         </button>
-        <v-date-picker v-model="date" />
       </div>
-      <div class="g-col-8">
-        <!-- <Vcalendar/> -->
-        <Calendar :lineName="displayName" :linePicture="pictureUrl" />
-      </div>
-    </div>
+
+      <v-date-picker title-position="left" v-model="date" />
+    </aside>
+    <main class="bd-main p-2">
+      <Calendar :lineName="displayName" :linePicture="pictureUrl" />
+    </main>
   </div>
 </template>
 
@@ -102,4 +106,33 @@ export default {
   },
 };
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+.bd-layout {
+  display: grid;
+  grid-template-columns: 260px auto;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "header header"
+    "sidebar main";
+}
+.bd-header {
+  grid-area: header;
+}
+.bd-sidebar {
+  grid-area: sidebar;
+}
+.bd-main {
+  grid-area: main;
+}
+.vc-container {
+  border: none;
+}
+
+.vc-weekday,
+.vc-day-content {
+  font-size: var(--text-xs);
+}
+.vc-title {
+  font-size: var(--text-sm);
+}
+</style>
