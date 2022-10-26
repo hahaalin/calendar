@@ -17,7 +17,7 @@
     </div>
   </header>
 
-  <!-- <div class="d-flex align-items-center">
+  <div class="d-flex align-items-center">
     <button type="button" class="btn" @click="prevFn">
       <i class="fa-solid fa-circle-chevron-left"></i>
     </button>
@@ -54,7 +54,7 @@
     <button type="button" class="btn" @click="nextFn">
       <i class="fa-solid fa-circle-chevron-right"></i>
     </button>
-  </div> -->
+  </div>
 
   <FullCalendar ref="fullCalendar" :options="calendarOptions" />
 
@@ -97,6 +97,7 @@ export default {
       viewTitle: "",
       ViewDate: "",
       tempOrder: {},
+      calendarApi: null,
       attrs: [
         {
           key: "today",
@@ -140,9 +141,12 @@ export default {
           timeGridDay: {
             titleFormat: "YYYY/MM/D",
           },
+          // timeGridWeek: {
+          //   titleFormat: "YYYY/MM/D",
+          // },
           week: {
-            titleFormat: "[Week from] D MMMM YYYY",
-            titleRangeSeparator: " to ",
+            // titleFormat: "[Week from] D MMMM YYYY",
+            // titleRangeSeparator: " to ",
           },
         },
         selectable: true, // 是否可點日期
@@ -228,31 +232,26 @@ export default {
       const orderComponent = this.$refs.orderModal;
       orderComponent.hideModal();
     },
-    changeView() {
-      // 改變視圖 周或日
-      const calendarApi = this.$refs.fullCalendar.getApi();
-      calendarApi.changeView(this.selectedView);
-      this.getViewTitle();
+    changeView(selectedView) {
+      this.calendarApi.changeView(selectedView);
+      // this.getViewTitle();
     },
     getViewTitle() {
-      const calendarApi = this.$refs.fullCalendar.getApi();
-      this.viewTitle = calendarApi.view.title;
+      return this.calendarApi.view.title;
     },
     getViewDate() {
       // 取得目前視圖日期
-      const calendarApi = this.$refs.fullCalendar.getApi();
-      const viewDate = calendarApi.getDate();
+      const viewDate = this.calendarApi.getDate();
       this.pickerDate = viewDate; // date-picker 也要換日期
+      return viewDate;
     },
     prevFn() {
-      const calendarApi = this.$refs.fullCalendar.getApi();
-      calendarApi.prev();
-      this.getViewTitle();
+      this.calendarApi.prev();
+      // this.getViewTitle();
       this.getViewDate();
     },
     nextFn() {
-      const calendarApi = this.$refs.fullCalendar.getApi();
-      calendarApi.next();
+      this.calendarApi.next();
       this.getViewTitle();
       this.getViewDate();
     },
@@ -263,6 +262,7 @@ export default {
     },
   },
   mounted() {
+    this.calendarApi = this.$refs.fullCalendar.getApi();
     this.getViewTitle();
   },
 };
