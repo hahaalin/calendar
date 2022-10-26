@@ -4,7 +4,8 @@ import VueAxios from "vue-axios";
 import App from "./App.vue";
 import router from "./router";
 import VCalendar from "v-calendar";
-import "bootstrap/dist/css/bootstrap.min.css";
+import "@/assets/scss/custom.scss";
+// import "bootstrap/dist/css/bootstrap.min.css";
 
 const app = createApp(App);
 app.use(router);
