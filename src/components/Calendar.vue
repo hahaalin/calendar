@@ -1,5 +1,5 @@
 <template>
-  <header class="d-flex flex-wrap justify-content-between">
+  <!-- <header class="d-flex flex-wrap justify-content-between">
     <h1>預約行事曆</h1>
     <div class="d-flex flex-wrap align-items-center">
       <select
@@ -15,19 +15,18 @@
         {{ lineName }}<img :src="linePicture" style="width: 20px" />
       </p>
     </div>
-  </header>
+  </header> -->
 
-  <div class="d-flex align-items-center">
+  <!-- <div class="d-flex align-items-center">
     <button type="button" class="btn" @click="prevFn">
       <i class="fa-solid fa-circle-chevron-left"></i>
     </button>
     <v-date-picker
       :rows="2"
-      class=""
       v-model="pickerDate"
       :attributes="attrs"
       color="green"
-      @dayclick="onDayClick"
+      @dayclick="gotoDate"
     >
       <template v-slot="{ togglePopover }">
         <div class="d-flex items-center">
@@ -54,18 +53,18 @@
     <button type="button" class="btn" @click="nextFn">
       <i class="fa-solid fa-circle-chevron-right"></i>
     </button>
-  </div>
+  </div> -->
 
   <FullCalendar ref="fullCalendar" :options="calendarOptions" />
 
-  <OrderModal
+  <!-- <OrderModal
     ref="orderModal"
     @add-event="addNewEvent"
     @update-event="updateEvent"
     @remove-event="removeEvent"
     :order="tempOrder"
     :isNew="isNew"
-  />
+  /> -->
   <!-- <footer class="p-3 text-center">
     <button class="btn primary-bg-color text-white" @click="openModal(true)">
       + 新增預約
@@ -80,11 +79,11 @@ import interactionPlugin from "@fullcalendar/interaction";
 import momentPlugin from "@fullcalendar/moment";
 // import moment from 'moment'
 // import 'moment/locale/zh-tw'
-import OrderModal from "../components/OrderModal";
+// import OrderModal from "../components/OrderModal";
 export default {
   components: {
     FullCalendar,
-    OrderModal,
+    // OrderModal,
   },
   props: {
     lineName: String,
@@ -103,11 +102,9 @@ export default {
           key: "today",
           highlight: {
             style: {
-              // Circle styles
-              background: "#7F74B4",
+              background: "#fcc",
             },
             contentStyle: {
-              // Text styles
               color: "white",
             },
           },
@@ -116,6 +113,7 @@ export default {
       ],
       calendarOptions: {
         locale: "zh-tw",
+        timeZone: "UTC",
         plugins: [
           dayGridPlugin,
           interactionPlugin,
@@ -123,30 +121,21 @@ export default {
           momentPlugin,
         ],
         initialView: "timeGridWeek",
-        firstDay: 1, // 周一開始
+        firstDay: 7,
         height: "100%",
-        allDaySlot: false,
+        // allDaySlot: false,
         headerToolbar: {
           left: "",
           center: "",
           right: "",
         },
-        // buttonText: {
-        //   today: '今日'
-        //   month: '月顯示',
-        //   week: '周顯示',
-        //   day: '日顯示'
-        // },
         views: {
           timeGridDay: {
-            titleFormat: "YYYY/MM/D",
+            titleFormat: "YYYY/MM/DD",
+            dayHeaderFormat: "ddd MM/DD",
           },
-          // timeGridWeek: {
-          //   titleFormat: "YYYY/MM/D",
-          // },
-          week: {
-            // titleFormat: "[Week from] D MMMM YYYY",
-            // titleRangeSeparator: " to ",
+          timeGridWeek: {
+            dayHeaderFormat: "ddd MM/DD",
           },
         },
         selectable: true, // 是否可點日期
@@ -164,7 +153,7 @@ export default {
   },
   methods: {
     handleDateSelect(selectInfo) {
-      console.log(selectInfo);
+      // console.log(selectInfo);
       const title = prompt("請輸入事件名稱");
       const calendarApi = selectInfo.view.calendar;
       calendarApi.unselect(); // clear date selection
@@ -179,14 +168,24 @@ export default {
       }
     },
     handleEventClick(clickInfo) {
-      this.openModal(false, {
+      // this.openModal(false, {
+      //   id: clickInfo.event.id,
+      //   title: clickInfo.event.title,
+      //   start: formatDate(clickInfo.event.startStr),
+      //   end: formatDate(clickInfo.event.endStr),
+      //   allDay: clickInfo.event.allDay,
+      //   event: clickInfo,
+      // });
+      console.log(clickInfo);
+      this.$emit("handle-event-clock", false, {
         id: clickInfo.event.id,
         title: clickInfo.event.title,
-        start: formatDate(clickInfo.event.startStr),
-        end: formatDate(clickInfo.event.endStr),
+        start: this.formatDate(clickInfo.event.startStr),
+        end: this.formatDate(clickInfo.event.endStr),
         allDay: clickInfo.event.allDay,
         event: clickInfo,
       });
+
       // console.log(clickInfo.event)
       // if (confirm(`你確定要刪除 '${clickInfo.event.title}' 嗎?`)) {
       //   clickInfo.event.remove()
@@ -195,42 +194,47 @@ export default {
     handleEvents(events) {
       this.currentEvents = events;
     },
-    openModal(isNew, item) {
-      if (isNew) {
-        this.tempOrder = {};
-      } else {
-        this.tempOrder = { ...item };
-      }
-      this.isNew = isNew;
-      const orderComponent = this.$refs.orderModal;
-      orderComponent.showModal();
-    },
+    // openModal(isNew, item) {
+    //   if (isNew) {
+    //     this.tempOrder = {};
+    //   } else {
+    //     this.tempOrder = { ...item };
+    //   }
+    //   this.isNew = isNew;
+    //   const orderDom = this.$refs.orderModal;
+    //   orderDom.showModal();
+    // },
     addNewEvent(item) {
-      const calendarApi = this.$refs.fullCalendar.getApi();
-      calendarApi.addEvent({
+      debugger;
+      console.log(item);
+      this.calendarApi.addEvent({
         id: item.id,
         title: item.title,
         start: item.start,
         end: item.end,
+        allDay: item.allDay,
       });
-      const orderComponent = this.$refs.orderModal;
-      orderComponent.hideModal();
+      // const orderDom = this.$refs.orderModal;
+      // orderDom.hideModal();
     },
     updateEvent(item) {
-      const calendarApi = this.$refs.fullCalendar.getApi();
-      const events = calendarApi.getEvents();
-      const index = events.findIndex((_event) => _event.id === item.id);
-      console.log(index, events);
-      events[index].setProp("title", item.title);
-      events[index].setStart(item.start);
-      events[index].setEnd(item.end);
-      const orderComponent = this.$refs.orderModal;
-      orderComponent.hideModal();
+      return new Promise((resolve) => {
+        const events = this.calendarApi.getEvents();
+        const index = events.findIndex((_event) => _event.id === item.id);
+        // console.log(index, events);
+        events[index].setProp("title", item.title);
+        events[index].setStart(item.start);
+        events[index].setEnd(item.end);
+        events[index].setAllDay(item.allDay);
+        resolve();
+      });
+      // const orderDom = this.$refs.orderModal;
+      // orderDom.hideModal();
     },
     removeEvent(clickInfo) {
       clickInfo.event.remove();
-      const orderComponent = this.$refs.orderModal;
-      orderComponent.hideModal();
+      // const orderDom = this.$refs.orderModal;
+      // orderDom.hideModal();
     },
     changeView(selectedView) {
       this.calendarApi.changeView(selectedView);
@@ -248,17 +252,23 @@ export default {
     prevFn() {
       this.calendarApi.prev();
       // this.getViewTitle();
-      this.getViewDate();
+      // this.getViewDate();
     },
     nextFn() {
       this.calendarApi.next();
-      this.getViewTitle();
-      this.getViewDate();
+      // this.getViewTitle();
+      // this.getViewDate();
     },
-    onDayClick() {
-      const calendarApi = this.$refs.fullCalendar.getApi();
-      calendarApi.gotoDate(this.pickerDate);
-      this.getViewTitle();
+    gotoDate(pickerDate) {
+      this.calendarApi.gotoDate(pickerDate);
+      // this.getViewTitle();
+    },
+    formatDate(date) {
+      if (date.indexOf("Z") > 0) {
+        return date.slice(0, date.indexOf("Z"));
+      } else {
+        return date;
+      }
     },
   },
   mounted() {
@@ -266,9 +276,6 @@ export default {
     this.getViewTitle();
   },
 };
-function formatDate(date) {
-  return date.slice(0, date.indexOf("+08:00"));
-}
 </script>
 <style lang="scss">
 .fc {

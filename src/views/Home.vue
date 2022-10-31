@@ -2,11 +2,19 @@
   <div class="container-fluid p-0 h-100 bd-layout">
     <header class="d-flex border-bottom p-2 align-items-center bd-header">
       <div class="d-flex align-items-center" style="width: 260px">
-        <img src="@/assets/icons8-google-calendar-96.png" alt="" width="40" />
+        <img
+          src="@/assets/icons8-google-calendar-96.png"
+          alt="mainlogo"
+          width="40"
+        />
         <h1 class="fs-4 mb-0">日曆</h1>
       </div>
       <div class="d-flex flex-wrap align-items-center flex-grow-1">
-        <button type="button" class="btn btn-outline-secondary me-3">
+        <button
+          type="button"
+          class="btn btn-outline-secondary me-3"
+          @click="gotoToday"
+        >
           今日
         </button>
         <div class="d-flex align-items-center">
@@ -16,7 +24,6 @@
           <button type="button" class="btn" @click="nextFn">
             <i class="fa-solid fa-angle-right text-secondary"></i>
           </button>
-
           <h2 class="fs-4 mb-0 ms-3">{{ viewTitle }}</h2>
         </div>
         <select
@@ -30,7 +37,8 @@
         </select>
 
         <p class="rounded-pill p-2 ms-3 border">
-          {{ lineName }}<img :src="linePicture" width="20" />
+          {{ lineName ? lineName : "登入"
+          }}<img :src="linePicture" width="20" />
         </p>
       </div>
     </header>
@@ -39,6 +47,7 @@
         <button
           type="button"
           class="btn btn-outline-secondary d-block rounded-pill p-3"
+          @click="openModal(true)"
         >
           <i class="fa-solid fa-plus me-3 fa-2x align-middle"></i>
           <span class="align-middle">建立</span>
@@ -48,14 +57,25 @@
       <v-date-picker
         title-position="left"
         v-model="pickerDate"
-        @dayclick="onDayClick"
+        color="green"
+        :attributes="attrs"
+        @dayclick="gotoDate"
       />
     </aside>
     <main class="bd-main p-2">
       <Calendar
         :lineName="displayName"
         :linePicture="pictureUrl"
+        @handle-event-clock="openModal"
         ref="calendar"
+      />
+      <OrderModal
+        ref="orderModal"
+        @add-event="addNewEvent"
+        @update-event="updateEvent"
+        @remove-event="removeEvent"
+        :order="tempOrder"
+        :isNew="isNew"
       />
     </main>
   </div>
@@ -67,12 +87,14 @@ import "@fortawesome/fontawesome-free/css/all.css";
 // import 'bootstrap/dist/css/bootstrap.min.css'
 import "@/assets/scss/main.scss";
 import Calendar from "@/components/Calendar.vue";
+import OrderModal from "@/components/OrderModal";
 import qs from "query-string";
 // import Vcalendar from '@/components/Vcalendar.vue'
 export default {
   name: "Home",
   components: {
     Calendar,
+    OrderModal,
   },
   data() {
     return {
@@ -83,6 +105,23 @@ export default {
       selectedView: "timeGridWeek",
       viewTitle: "",
       calendarDom: "",
+      orderDom: "",
+      tempOrder: {},
+      isNew: "",
+      attrs: [
+        {
+          key: "today",
+          highlight: {
+            style: {
+              background: "#1B73E8",
+            },
+            contentStyle: {
+              color: "white",
+            },
+          },
+          dates: new Date(),
+        },
+      ],
     };
   },
   methods: {
@@ -123,24 +162,64 @@ export default {
         // this.$router.push('/login')
       }
     },
+    openModal(isNew, item) {
+      if (isNew) {
+        this.tempOrder = {};
+      } else {
+        this.tempOrder = { ...item };
+      }
+      this.isNew = isNew;
+
+      this.orderDom.showModal();
+    },
+    test(isNew, item) {
+      console.log("test", isNew, item);
+    },
+    getViewTitle() {
+      this.viewTitle = this.calendarDom.getViewTitle();
+    },
+    getViewDate() {
+      this.pickerDate = this.calendarDom.getViewDate();
+    },
     changeView() {
       this.calendarDom.changeView(this.selectedView);
-      this.viewTitle = this.calendarDom.getViewTitle();
+      this.getViewTitle();
     },
     prevFn() {
       this.calendarDom.prevFn();
-      this.viewTitle = this.calendarDom.getViewTitle();
-      this.pickerDate = this.calendarDom.getViewDate();
+      this.getViewTitle();
+      this.getViewDate();
     },
     nextFn() {
       this.calendarDom.nextFn();
-      this.viewTitle = this.calendarDom.getViewTitle();
-      this.pickerDate = this.calendarDom.getViewDate();
+      this.getViewTitle();
+      this.getViewDate();
+    },
+    gotoDate() {
+      this.calendarDom.gotoDate(this.pickerDate);
+      this.getViewTitle();
+    },
+    gotoToday() {
+      this.gotoDate(new Date());
+      this.pickerDate = new Date();
+    },
+    addNewEvent(item) {
+      this.calendarDom.addNewEvent(item);
+      this.orderDom.hideModal();
+    },
+    async updateEvent(item) {
+      await this.calendarDom.updateEvent(item);
+      this.orderDom.hideModal();
+    },
+    removeEvent(clickInfo) {
+      this.calendarDom.removeEvent(clickInfo);
+      this.orderDom.hideModal();
     },
   },
   mounted() {
     this.calendarDom = this.$refs.calendar;
-    this.viewTitle = this.calendarDom.getViewTitle();
+    this.orderDom = this.$refs.orderModal;
+    this.getViewTitle();
   },
   created() {
     this.getUrl();
