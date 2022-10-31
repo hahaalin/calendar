@@ -1,76 +1,5 @@
 <template>
-  <header class="d-flex flex-wrap justify-content-between">
-    <h1>預約行事曆</h1>
-    <div class="d-flex flex-wrap align-items-center">
-      <select
-        v-model="selectedView"
-        @change="changeView"
-        class="border-0 secondary-bg-color p-2 rounded-pill primary-color"
-      >
-        <option value="dayGridMonth">月</option>
-        <option value="timeGridWeek">周</option>
-        <option value="timeGridDay">日</option>
-      </select>
-      <p class="secondary-bg-color rounded-pill p-2 ms-2 primary-color">
-        {{ lineName }}<img :src="linePicture" style="width: 20px" />
-      </p>
-    </div>
-  </header>
-
-  <div class="d-flex align-items-center">
-    <button type="button" class="btn" @click="prevFn">
-      <i class="fa-solid fa-circle-chevron-left"></i>
-    </button>
-    <v-date-picker
-      :rows="2"
-      class=""
-      v-model="pickerDate"
-      :attributes="attrs"
-      color="green"
-      @dayclick="onDayClick"
-    >
-      <template v-slot="{ togglePopover }">
-        <div class="d-flex items-center">
-          <button
-            type="button"
-            class="secondary-bg-color rounded-circle"
-            @click="togglePopover()"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              style="width: 20px; height: 20px; margin: 5px"
-            >
-              <path
-                d="M1 4c0-1.1.9-2 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4zm2 2v12h14V6H3zm2-6h2v2H5V0zm8 0h2v2h-2V0zM5 9h2v2H5V9zm0 4h2v2H5v-2zm4-4h2v2H9V9zm0 4h2v2H9v-2zm4-4h2v2h-2V9zm0 4h2v2h-2v-2z"
-              ></path>
-            </svg>
-          </button>
-        </div>
-      </template>
-    </v-date-picker>
-
-    <p>{{ viewTitle }}</p>
-    <button type="button" class="btn" @click="nextFn">
-      <i class="fa-solid fa-circle-chevron-right"></i>
-    </button>
-  </div>
-
   <FullCalendar ref="fullCalendar" :options="calendarOptions" />
-
-  <OrderModal
-    ref="orderModal"
-    @add-event="addNewEvent"
-    @update-event="updateEvent"
-    @remove-event="removeEvent"
-    :order="tempOrder"
-    :isNew="isNew"
-  />
-  <!-- <footer class="p-3 text-center">
-    <button class="btn primary-bg-color text-white" @click="openModal(true)">
-      + 新增預約
-    </button>
-  </footer> -->
 </template>
 <script>
 import FullCalendar from "@fullcalendar/vue3";
@@ -80,42 +9,41 @@ import interactionPlugin from "@fullcalendar/interaction";
 import momentPlugin from "@fullcalendar/moment";
 // import moment from 'moment'
 // import 'moment/locale/zh-tw'
-import OrderModal from "../components/OrderModal";
+// import OrderModal from "../components/OrderModal";
 export default {
   components: {
     FullCalendar,
-    OrderModal,
+    // OrderModal,
   },
-  props: {
-    lineName: String,
-    linePicture: String,
-  },
+  // props: {
+  //   lineName: String,
+  //   linePicture: String,
+  // },
   data() {
     return {
-      selectedView: "timeGridWeek",
-      pickerDate: new Date(),
-      viewTitle: "",
-      ViewDate: "",
-      tempOrder: {},
+      // selectedView: "timeGridWeek",
+      // pickerDate: new Date(),
+      // viewTitle: "",
+      // ViewDate: "",
+      // tempOrder: {},
       calendarApi: null,
-      attrs: [
-        {
-          key: "today",
-          highlight: {
-            style: {
-              // Circle styles
-              background: "#7F74B4",
-            },
-            contentStyle: {
-              // Text styles
-              color: "white",
-            },
-          },
-          dates: new Date(),
-        },
-      ],
+      // attrs: [
+      //   {
+      //     key: "today",
+      //     highlight: {
+      //       style: {
+      //         background: "#fcc",
+      //       },
+      //       contentStyle: {
+      //         color: "white",
+      //       },
+      //     },
+      //     dates: new Date(),
+      //   },
+      // ],
       calendarOptions: {
         locale: "zh-tw",
+        timeZone: "UTC",
         plugins: [
           dayGridPlugin,
           interactionPlugin,
@@ -123,30 +51,21 @@ export default {
           momentPlugin,
         ],
         initialView: "timeGridWeek",
-        firstDay: 1, // 周一開始
+        firstDay: 7,
         height: "100%",
-        allDaySlot: false,
+        // allDaySlot: false,
         headerToolbar: {
           left: "",
           center: "",
           right: "",
         },
-        // buttonText: {
-        //   today: '今日'
-        //   month: '月顯示',
-        //   week: '周顯示',
-        //   day: '日顯示'
-        // },
         views: {
           timeGridDay: {
-            titleFormat: "YYYY/MM/D",
+            titleFormat: "YYYY/MM/DD",
+            dayHeaderFormat: "ddd MM/DD",
           },
-          // timeGridWeek: {
-          //   titleFormat: "YYYY/MM/D",
-          // },
-          week: {
-            // titleFormat: "[Week from] D MMMM YYYY",
-            // titleRangeSeparator: " to ",
+          timeGridWeek: {
+            dayHeaderFormat: "ddd MM/DD",
           },
         },
         selectable: true, // 是否可點日期
@@ -155,16 +74,13 @@ export default {
         eventsSet: this.handleEvents,
         editable: true,
         events: [],
-        viewDidMount: function (view) {
-          console.log(view);
-        },
       },
       currentEvents: [],
     };
   },
   methods: {
     handleDateSelect(selectInfo) {
-      console.log(selectInfo);
+      // console.log(selectInfo);
       const title = prompt("請輸入事件名稱");
       const calendarApi = selectInfo.view.calendar;
       calendarApi.unselect(); // clear date selection
@@ -179,14 +95,24 @@ export default {
       }
     },
     handleEventClick(clickInfo) {
-      this.openModal(false, {
+      // this.openModal(false, {
+      //   id: clickInfo.event.id,
+      //   title: clickInfo.event.title,
+      //   start: formatDate(clickInfo.event.startStr),
+      //   end: formatDate(clickInfo.event.endStr),
+      //   allDay: clickInfo.event.allDay,
+      //   event: clickInfo,
+      // });
+      console.log(clickInfo);
+      this.$emit("handle-event-clock", false, {
         id: clickInfo.event.id,
         title: clickInfo.event.title,
-        start: formatDate(clickInfo.event.startStr),
-        end: formatDate(clickInfo.event.endStr),
+        start: this.formatDate(clickInfo.event.startStr),
+        end: this.formatDate(clickInfo.event.endStr),
         allDay: clickInfo.event.allDay,
         event: clickInfo,
       });
+
       // console.log(clickInfo.event)
       // if (confirm(`你確定要刪除 '${clickInfo.event.title}' 嗎?`)) {
       //   clickInfo.event.remove()
@@ -195,42 +121,45 @@ export default {
     handleEvents(events) {
       this.currentEvents = events;
     },
-    openModal(isNew, item) {
-      if (isNew) {
-        this.tempOrder = {};
-      } else {
-        this.tempOrder = { ...item };
-      }
-      this.isNew = isNew;
-      const orderComponent = this.$refs.orderModal;
-      orderComponent.showModal();
-    },
+    // openModal(isNew, item) {
+    //   if (isNew) {
+    //     this.tempOrder = {};
+    //   } else {
+    //     this.tempOrder = { ...item };
+    //   }
+    //   this.isNew = isNew;
+    //   const orderDom = this.$refs.orderModal;
+    //   orderDom.showModal();
+    // },
     addNewEvent(item) {
-      const calendarApi = this.$refs.fullCalendar.getApi();
-      calendarApi.addEvent({
+      debugger;
+      console.log(item);
+      this.calendarApi.addEvent({
         id: item.id,
         title: item.title,
         start: item.start,
         end: item.end,
+        allDay: item.allDay,
       });
-      const orderComponent = this.$refs.orderModal;
-      orderComponent.hideModal();
+      // const orderDom = this.$refs.orderModal;
+      // orderDom.hideModal();
     },
     updateEvent(item) {
-      const calendarApi = this.$refs.fullCalendar.getApi();
-      const events = calendarApi.getEvents();
+      const events = this.calendarApi.getEvents();
       const index = events.findIndex((_event) => _event.id === item.id);
-      console.log(index, events);
+      // console.log(index, events);
       events[index].setProp("title", item.title);
       events[index].setStart(item.start);
       events[index].setEnd(item.end);
-      const orderComponent = this.$refs.orderModal;
-      orderComponent.hideModal();
+      events[index].setAllDay(item.allDay);
+
+      // const orderDom = this.$refs.orderModal;
+      // orderDom.hideModal();
     },
     removeEvent(clickInfo) {
       clickInfo.event.remove();
-      const orderComponent = this.$refs.orderModal;
-      orderComponent.hideModal();
+      // const orderDom = this.$refs.orderModal;
+      // orderDom.hideModal();
     },
     changeView(selectedView) {
       this.calendarApi.changeView(selectedView);
@@ -241,24 +170,31 @@ export default {
     },
     getViewDate() {
       // 取得目前視圖日期
-      const viewDate = this.calendarApi.getDate();
-      this.pickerDate = viewDate; // date-picker 也要換日期
-      return viewDate;
+      return this.calendarApi.getDate();
+      // this.pickerDate = viewDate; // date-picker 也要換日期
+      // return viewDate;
     },
     prevFn() {
       this.calendarApi.prev();
       // this.getViewTitle();
-      this.getViewDate();
+      // this.getViewDate();
     },
     nextFn() {
       this.calendarApi.next();
-      this.getViewTitle();
-      this.getViewDate();
+      // this.getViewTitle();
+      // this.getViewDate();
     },
-    onDayClick() {
-      const calendarApi = this.$refs.fullCalendar.getApi();
-      calendarApi.gotoDate(this.pickerDate);
-      this.getViewTitle();
+    gotoDate(pickerDate) {
+      debugger;
+      this.calendarApi.gotoDate(pickerDate);
+      // this.getViewTitle();
+    },
+    formatDate(date) {
+      if (date.indexOf("Z") > 0) {
+        return date.slice(0, date.indexOf("Z"));
+      } else {
+        return date;
+      }
     },
   },
   mounted() {
@@ -266,9 +202,6 @@ export default {
     this.getViewTitle();
   },
 };
-function formatDate(date) {
-  return date.slice(0, date.indexOf("+08:00"));
-}
 </script>
 <style lang="scss">
 .fc {
