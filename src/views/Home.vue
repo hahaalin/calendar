@@ -1,6 +1,15 @@
 <template>
   <div class="container-fluid p-0 h-100 bd-layout">
-    <header class="d-flex border-bottom p-2 align-items-center bd-header">
+    <Header
+      @gotoToday="gotoToday"
+      @prevFn="prevFn"
+      @nextFn="nextFn"
+      @changeView="changeView"
+      :viewTitle="viewTitle"
+      :lineName="lineName"
+      :linePicture="linePictureUrl"
+    />
+    <!-- <header class="d-flex border-bottom p-2 align-items-center bd-header">
       <div class="d-flex align-items-center" style="width: 260px">
         <img
           src="@/assets/icons8-google-calendar-96.png"
@@ -41,7 +50,7 @@
           }}<img :src="linePicture" width="20" />
         </p>
       </div>
-    </header>
+    </header> -->
     <aside class="bd-sidebar">
       <div class="px-2 py-3">
         <button
@@ -63,12 +72,7 @@
       />
     </aside>
     <main class="bd-main p-2">
-      <Calendar
-        :lineName="displayName"
-        :linePicture="pictureUrl"
-        @handle-event-clock="openModal"
-        ref="calendar"
-      />
+      <Calendar @handle-event-clock="openModal" ref="calendar" />
       <OrderModal
         ref="orderModal"
         @add-event="addNewEvent"
@@ -86,6 +90,7 @@ import "v-calendar/dist/style.css";
 import "@fortawesome/fontawesome-free/css/all.css";
 // import 'bootstrap/dist/css/bootstrap.min.css'
 import "@/assets/scss/main.scss";
+import Header from "@/components/Header.vue";
 import Calendar from "@/components/Calendar.vue";
 import OrderModal from "@/components/OrderModal";
 import qs from "query-string";
@@ -93,6 +98,7 @@ import qs from "query-string";
 export default {
   name: "Home",
   components: {
+    Header,
     Calendar,
     OrderModal,
   },
@@ -100,9 +106,9 @@ export default {
     return {
       pickerDate: new Date(),
       code: "",
-      displayName: "",
-      pictureUrl: "",
-      selectedView: "timeGridWeek",
+      lineName: "",
+      linePictureUrl: "",
+      // selectedView: "timeGridWeek",
       viewTitle: "",
       calendarDom: "",
       orderDom: "",
@@ -144,7 +150,6 @@ export default {
             })
           )
           .then((response) => {
-            console.log(response);
             const token = response.data.access_token;
             this.$http
               .get("https://api.line.me/v2/profile", {
@@ -153,9 +158,8 @@ export default {
                 },
               })
               .then((response) => {
-                console.log(response.data);
-                this.displayName = response.data.displayName;
-                this.pictureUrl = response.data.pictureUrl;
+                this.lineName = response.data?.displayName;
+                this.linePictureUrl = response.data?.pictureUrl;
               });
           });
       } else {
@@ -172,17 +176,14 @@ export default {
 
       this.orderDom.showModal();
     },
-    test(isNew, item) {
-      console.log("test", isNew, item);
-    },
     getViewTitle() {
       this.viewTitle = this.calendarDom.getViewTitle();
     },
     getViewDate() {
       this.pickerDate = this.calendarDom.getViewDate();
     },
-    changeView() {
-      this.calendarDom.changeView(this.selectedView);
+    changeView(selectedView) {
+      this.calendarDom.changeView(selectedView);
       this.getViewTitle();
     },
     prevFn() {
@@ -200,15 +201,17 @@ export default {
       this.getViewTitle();
     },
     gotoToday() {
-      this.gotoDate(new Date());
+      debugger;
+      this.calendarDom.gotoDate(new Date());
+      this.getViewTitle();
       this.pickerDate = new Date();
     },
     addNewEvent(item) {
       this.calendarDom.addNewEvent(item);
       this.orderDom.hideModal();
     },
-    async updateEvent(item) {
-      await this.calendarDom.updateEvent(item);
+    updateEvent(item) {
+      this.calendarDom.updateEvent(item);
       this.orderDom.hideModal();
     },
     removeEvent(clickInfo) {

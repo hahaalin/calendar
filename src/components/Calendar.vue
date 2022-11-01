@@ -85,32 +85,32 @@ export default {
     FullCalendar,
     // OrderModal,
   },
-  props: {
-    lineName: String,
-    linePicture: String,
-  },
+  // props: {
+  //   lineName: String,
+  //   linePicture: String,
+  // },
   data() {
     return {
-      selectedView: "timeGridWeek",
-      pickerDate: new Date(),
-      viewTitle: "",
-      ViewDate: "",
-      tempOrder: {},
+      // selectedView: "timeGridWeek",
+      // pickerDate: new Date(),
+      // viewTitle: "",
+      // ViewDate: "",
+      // tempOrder: {},
       calendarApi: null,
-      attrs: [
-        {
-          key: "today",
-          highlight: {
-            style: {
-              background: "#fcc",
-            },
-            contentStyle: {
-              color: "white",
-            },
-          },
-          dates: new Date(),
-        },
-      ],
+      // attrs: [
+      //   {
+      //     key: "today",
+      //     highlight: {
+      //       style: {
+      //         background: "#fcc",
+      //       },
+      //       contentStyle: {
+      //         color: "white",
+      //       },
+      //     },
+      //     dates: new Date(),
+      //   },
+      // ],
       calendarOptions: {
         locale: "zh-tw",
         timeZone: "UTC",
@@ -144,9 +144,6 @@ export default {
         eventsSet: this.handleEvents,
         editable: true,
         events: [],
-        viewDidMount: function (view) {
-          console.log(view);
-        },
       },
       currentEvents: [],
     };
@@ -218,16 +215,14 @@ export default {
       // orderDom.hideModal();
     },
     updateEvent(item) {
-      return new Promise((resolve) => {
-        const events = this.calendarApi.getEvents();
-        const index = events.findIndex((_event) => _event.id === item.id);
-        // console.log(index, events);
-        events[index].setProp("title", item.title);
-        events[index].setStart(item.start);
-        events[index].setEnd(item.end);
-        events[index].setAllDay(item.allDay);
-        resolve();
-      });
+      const events = this.calendarApi.getEvents();
+      const index = events.findIndex((_event) => _event.id === item.id);
+      // console.log(index, events);
+      events[index].setProp("title", item.title);
+      events[index].setStart(item.start);
+      events[index].setEnd(item.end);
+      events[index].setAllDay(item.allDay);
+
       // const orderDom = this.$refs.orderModal;
       // orderDom.hideModal();
     },
@@ -245,9 +240,9 @@ export default {
     },
     getViewDate() {
       // 取得目前視圖日期
-      const viewDate = this.calendarApi.getDate();
-      this.pickerDate = viewDate; // date-picker 也要換日期
-      return viewDate;
+      return this.calendarApi.getDate();
+      // this.pickerDate = viewDate; // date-picker 也要換日期
+      // return viewDate;
     },
     prevFn() {
       this.calendarApi.prev();
@@ -260,6 +255,7 @@ export default {
       // this.getViewDate();
     },
     gotoDate(pickerDate) {
+      debugger;
       this.calendarApi.gotoDate(pickerDate);
       // this.getViewTitle();
     },
