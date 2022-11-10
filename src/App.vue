@@ -2,9 +2,7 @@
   <router-view />
 </template>
 
-<script>
-// import "@/assets/scss/custom.scss";
-</script>
+<script></script>
 
 <style lang="scss">
 html,

@@ -5,7 +5,6 @@ import App from "./App.vue";
 import router from "./router";
 import VCalendar from "v-calendar";
 import "@/assets/scss/custom.scss";
-// import "bootstrap/dist/css/bootstrap.min.css";
 
 const app = createApp(App);
 app.use(router);

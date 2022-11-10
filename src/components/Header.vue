@@ -35,9 +35,19 @@
         <option value="timeGridDay">日</option>
       </select>
 
-      <p class="rounded-pill p-2 ms-3 border">
-        {{ lineName ? lineName : "登入" }}<img :src="linePicture" width="20" />
+      <p
+        class="rounded-pill p-2 ms-3 border bg-info text-white"
+        v-if="lineName"
+      >
+        {{ lineName
+        }}<img :src="linePicture" width="30" class="rounded-circle" />
       </p>
+
+      <router-link to="/login" v-else>
+        <button class="rounded-pill p-2 ms-3 btn btn-info text-white">
+          登入
+        </button>
+      </router-link>
     </div>
   </header>
 </template>

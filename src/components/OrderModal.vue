@@ -1,5 +1,4 @@
 <template>
-  <!-- Modal -->
   <div
     class="modal fade"
     id="exampleModal"
@@ -88,6 +87,11 @@
               <label for="allDayCheck" class="form-check-label">全天</label>
             </div>
           </div>
+          <div class="mb-3" v-if="tempOrder.allDay">
+            <p class="text-danger">
+              全日結束日需＋1天。例如：要顯示的是2022/11/09一日活動，則需選擇2022/11/09-2022/11/10
+            </p>
+          </div>
         </div>
         <div class="modal-footer">
           <button
@@ -165,7 +169,6 @@ export default {
   watch: {
     order() {
       this.tempOrder = this.order;
-      console.log("tempOrder", this.tempOrder);
     },
   },
   mixins: [modalMixin],
