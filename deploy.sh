@@ -15,4 +15,3 @@ git commit -m 'deploy'
 git push -f https://github.com/hahaalin/calendar.git master:gh-pages
 
 cd -
-rm -r dist
