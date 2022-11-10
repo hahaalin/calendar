@@ -16,15 +16,12 @@
 </template>
 <script>
 export default {
-  data() {
-    return {};
-  },
   methods: {
     lineAuth() {
-      var URL = "https://access.line.me/oauth2/v2.1/authorize?";
+      let URL = "https://access.line.me/oauth2/v2.1/authorize?";
       URL += "response_type=code";
-      URL += "&client_id=1657109301";
-      URL += "&redirect_uri=https://hahaalin.github.io/calendar/dist/";
+      URL += `&client_id=${process.env.VUE_APP_CLIENT_ID}`;
+      URL += `&redirect_uri=${process.env.VUE_APP_REDIRECT_URL}`;
       URL += "&state=abcde";
       URL += "&scope=openid%20profile";
       window.location.href = URL;

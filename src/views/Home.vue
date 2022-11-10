@@ -46,13 +46,11 @@
 <script>
 import "v-calendar/dist/style.css";
 import "@fortawesome/fontawesome-free/css/all.css";
-// import 'bootstrap/dist/css/bootstrap.min.css'
 import "@/assets/scss/main.scss";
 import Header from "@/components/Header.vue";
 import Calendar from "@/components/Calendar.vue";
 import OrderModal from "@/components/OrderModal";
 import qs from "query-string";
-// import Vcalendar from '@/components/Vcalendar.vue'
 export default {
   name: "Home",
   components: {
@@ -63,10 +61,8 @@ export default {
   data() {
     return {
       pickerDate: new Date(),
-      code: "",
       lineName: "",
       linePictureUrl: "",
-      // selectedView: "timeGridWeek",
       viewTitle: "",
       calendarDom: "",
       orderDom: "",
@@ -90,25 +86,23 @@ export default {
   },
   methods: {
     getUrl() {
-      var getUrlString = location.href;
-      var url = new URL(getUrlString);
-      // console.log(url.searchParams.get('code'))
+      const getUrlString = location.href;
+      const url = new URL(getUrlString);
       if (url.searchParams.has("state")) {
-        this.code = url.searchParams.get("code");
-
+        const code = url.searchParams.get("code");
         this.$http
           .post(
             "https://api.line.me/oauth2/v2.1/token",
             qs.stringify({
               grant_type: "authorization_code",
-              code: this.code,
-              redirect_uri: "https://hahaalin.github.io/calendar/dist/",
-              client_id: "1657109301",
-              client_secret: "6bdf74180a27a5fb330806ae2c65e6c3",
+              code: code,
+              redirect_uri: `${process.env.VUE_APP_REDIRECT_URL}`,
+              client_id: `${process.env.VUE_APP_CLIENT_ID}`,
+              client_secret: `${process.env.VUE_APP_CLIENT_SECRET}`,
             })
           )
           .then((response) => {
-            const token = response.data.access_token;
+            const token = response.data?.access_token;
             this.$http
               .get("https://api.line.me/v2/profile", {
                 headers: {
@@ -120,8 +114,6 @@ export default {
                 this.linePictureUrl = response.data?.pictureUrl;
               });
           });
-      } else {
-        // this.$router.push('/login')
       }
     },
     openModal(isNew, item) {
@@ -159,7 +151,6 @@ export default {
       this.getViewTitle();
     },
     gotoToday() {
-      debugger;
       this.calendarDom.gotoDate(new Date());
       this.getViewTitle();
       this.pickerDate = new Date();
